@@ -4,10 +4,12 @@ var bresenham = require('bresenham')
 var charm = require('charm')()
 charm.pipe(process.stdout)
 
+var termsize = require('window-size')
+
 var elements = {}
 
 var at = [-122.2499,37.8357130]
-var size = 0.0003
+var size = 0.0005
 
 var bbox = [
   [at[0] - size, at[1] - size],
@@ -25,7 +27,7 @@ var bbox = [
   ts.on('data', renderElement.bind(null, camera))
   // ts.once('error', console.log)
   ts.once('end', function () {
-    charm.position(0, 25)
+    charm.position(0, termsize.height)
   })
 })(require('fs').createReadStream('./data.xml'))
 
@@ -45,8 +47,8 @@ function nodeToTerm (camera, node) {
 
   var w = camera.bbox[1][0] - camera.bbox[0][0]
   var h = camera.bbox[1][1] - camera.bbox[0][1]
-  var x = Math.round(((node.lon - camera.bbox[0][0]) / w) * 80 * horizScale)
-  var y = 24 - Math.round(((node.lat - camera.bbox[0][1]) / h) * 24 * vertScale)
+  var x = Math.round(((node.lon - camera.bbox[0][0]) / w) * termsize.width * horizScale)
+  var y = termsize.height - Math.round(((node.lat - camera.bbox[0][1]) / h) * termsize.height * vertScale)
   return [x, y]
 }
 
@@ -56,7 +58,7 @@ function renderNode (camera, node) {
   var pos = nodeToTerm(camera, node)
   var x = pos[0]
   var y = pos[1]
-  if (x < 0 || y < 0 || x >= 80 || y >= 24) return
+  if (x < 0 || y < 0 || x >= termsize.width || y >= termsize.height) return
 
   charm.position(x, y)
   charm.write('o')
@@ -85,7 +87,7 @@ function renderWay (camera, way) {
     for (var j=0; j < pts.length; j++) {
       var x = pts[j].x
       var y = pts[j].y
-      if (x < 0 || y < 0 || x >= 80 || y >= 24) continue
+      if (x < 0 || y < 0 || x >= termsize.width || y >= termsize.height) continue
       charm.position(x, y)
       charm.write('.')
     }
