@@ -36,10 +36,13 @@ function renderElement (camera, element) {
 }
 
 function nodeToTerm (camera, node) {
+  var horizScale = 0.5
+  var vertScale = 1
+
   var w = camera.bbox[1][0] - camera.bbox[0][0]
   var h = camera.bbox[1][1] - camera.bbox[0][1]
-  var x = Math.round(((node.lon - camera.bbox[0][0]) / w) * 80)
-  var y = Math.round(((node.lat - camera.bbox[0][1]) / h) * 24)
+  var x = Math.round(((node.lon - camera.bbox[0][0]) / w) * 80 * horizScale)
+  var y = 24 - Math.round(((node.lat - camera.bbox[0][1]) / h) * 24 * vertScale)
   return [x, y]
 }
 
@@ -56,6 +59,19 @@ function renderNode (camera, node) {
 }
 
 function renderWay (camera, way) {
+  charm.display('bright')
+  var colours = [
+    'red',
+    'yellow',
+    'green',
+    'blue',
+    'cyan',
+    'magenta',
+    'black',
+    'white'
+  ] 
+  charm.foreground(colours[Math.floor(Math.random() * colours.length)])
+
   for (var i=0; i < way.nodes.length - 1; i++) {
     var n1 = elements[way.nodes[i]]
     var n2 = elements[way.nodes[i+1]]
