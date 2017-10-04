@@ -6,11 +6,15 @@ charm.pipe(process.stdout)
 
 var elements = {}
 
+var at = [-122.2499,37.8357130]
+var size = 0.0003
+
 var bbox = [
-  [-122.15, 37.749],
-  [-122.149, 37.75]
+  [at[0] - size, at[1] - size],
+  [at[0] + size, at[1] + size]
 ]
-https.get('https://www.openstreetmap.org/api/0.6/map?bbox=-122.15,37.749,-122.149,37.75', function (res) {
+// https.get('https://www.openstreetmap.org/api/0.6/map?bbox=-122.15,37.749,-122.149,37.75', function (res) {
+;(function (res) {
   var camera = {
     bbox: bbox
   }
@@ -23,7 +27,7 @@ https.get('https://www.openstreetmap.org/api/0.6/map?bbox=-122.15,37.749,-122.14
   ts.once('end', function () {
     charm.position(0, 25)
   })
-})
+})(require('fs').createReadStream('./data.xml'))
 
 function renderElement (camera, element) {
   elements[element.id] = element
