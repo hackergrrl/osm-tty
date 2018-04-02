@@ -36,6 +36,14 @@ fs.createReadStream(process.argv[3])
     var id = genId()
     oldToNewId[elm.id] = id
     elm.id = id
+
+    if (elm.type === 'way') {
+      elm.nodes = (elms.refs||elm.nodes||[]).map(function (refId) {
+        return oldToNewId[refId]
+      }).filter(Boolean)
+      delete elm.refs
+    }
+
     elms.push(elm)
   })
   .on('end', function () {
