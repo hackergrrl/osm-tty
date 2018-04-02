@@ -36,12 +36,45 @@ var camera = {
   ]
 }
 
-charm.reset()
-
 function redraw () {
+  charm.reset()
   osm.query(camera.bbox, function (err, elms) {
     elms.forEach(render.bind(null, charm, camera))
   })
 }
 
 redraw()
+
+process.stdin.setRawMode(true)
+process.stdin.on('data', function (d) {
+  var chr = d.toString('hex')
+
+  console.log(chr)
+  switch (chr) {
+    /* ctrl+c */ case '03': process.exit(0)
+    /* h      */ case '68': {
+      camera.bbox[1][0] -= 0.003
+      camera.bbox[1][1] -= 0.003
+      redraw()
+      break
+    }
+    /* l      */ case '6c': {
+      camera.bbox[1][0] += 0.003
+      camera.bbox[1][1] += 0.003
+      redraw()
+      break
+    }
+    /* j      */ case '6a': {
+      camera.bbox[0][0] -= 0.003
+      camera.bbox[0][1] -= 0.003
+      redraw()
+      break
+    }
+    /* k      */ case '6b': {
+      camera.bbox[0][0] += 0.003
+      camera.bbox[0][1] += 0.003
+      redraw()
+      break
+    }
+  }
+})

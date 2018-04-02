@@ -12,7 +12,7 @@ function renderElement (charm, camera, element) {
 }
 
 function nodeToTermCoords (camera, node) {
-  var horizScale = 0.5
+  var horizScale = 1 //0.5
   var vertScale = 1
 
   var w = camera.bbox[1][1] - camera.bbox[1][0]
