@@ -41,9 +41,18 @@ function redraw () {
   osm.query(camera.bbox, function (err, elms) {
     if (err) throw err
     var all = {}
+    elms.sort(cmp)
     elms.forEach(function (elm) { all[elm.id] = elm })
     elms.forEach(render.bind(null, charm, camera, all))
   })
+}
+
+var typeval = {
+  way: 1,
+  node: 0
+}
+function cmp (a, b) {
+  return typeval[b.type] - typeval[a.type]
 }
 
 redraw()
