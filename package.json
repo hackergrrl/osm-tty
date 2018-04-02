@@ -24,7 +24,7 @@
     "mkdirp": "^0.5.1",
     "osm2obj": "^2.2.2",
     "random-access-memory": "^2.4.0",
-    "random-bytes": "^1.0.0",
+    "randombytes": "^2.0.6",
     "subleveldown": "^2.1.0",
     "window-size": "^1.1.0"
   },

@@ -15,7 +15,7 @@ var grid = require('grid-point-store')
 var level = require('level')
 var sublevel = require('subleveldown')
 
-var randomBytes = require('random-bytes')
+var randomBytes = require('randombytes')
 var path = require('path')
 var osm2obj = require('osm2obj')
 
