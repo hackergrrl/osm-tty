@@ -28,6 +28,7 @@ var osm = hyperosm({
 
 var elms = []
 var oldToNewId = {}
+var byType = { node: 0, way: 0, relation: 0, bounds: 0 }
 
 fs.createReadStream(process.argv[3])
   .pipe(osm2obj())
@@ -38,11 +39,13 @@ fs.createReadStream(process.argv[3])
     elm.id = id
 
     if (elm.type === 'way') {
-      elm.nodes = (elms.refs||elm.nodes||[]).map(function (refId) {
+      elm.refs = (elms.refs||elm.nodes||[]).map(function (refId) {
         return oldToNewId[refId]
       }).filter(Boolean)
-      delete elm.refs
+      delete elm.nodes
     }
+
+    byType[elm.type]++
 
     elms.push(elm)
   })
@@ -58,7 +61,7 @@ fs.createReadStream(process.argv[3])
     })
     osm.batch(batch, function (err, res) {
       if (err) throw err
-      console.log('success! imported', res.length, 'elements')
+      console.log('success! imported', byType)
     })
   })
 
