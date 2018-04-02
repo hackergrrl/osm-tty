@@ -56,7 +56,19 @@ function renderWay (charm, camera, allElements, way) {
   var chr = null
   var col = null
   var area = false
-  if (way.tags.highway)               { col = 'white'; chr = '.' }
+  charm.foreground('white')
+  if (way.tags.highway) {
+    var hw = way.tags.highway
+    if (hw === 'track') {
+      if (way.tags.tracktype === 'grade1') { col = 'white'; chr = '&' }
+      if (way.tags.tracktype === 'grade2') { col = 'white'; chr = '%' }
+      if (way.tags.tracktype === 'grade3') { col = 'white'; chr = '*' }
+      if (way.tags.tracktype === 'grade4') { col = 'white'; chr = '.' }
+    }
+    else if (hw === 'residential')    { col = 'black'; chr = '.' }
+    else if (hw === 'living_street')  { col = 'black'; chr = '.' }
+    else if (hw === 'service')        { col = 'cyan'; chr = '.' }
+  }
   if (way.tags.barrier)               { col = 'black'; chr = 'x' }
   if (way.tags.leisure)               { col = 'green'; chr = '.'; area = true }
   if (way.tags.building)              { col = 'black'; chr = '#'; area = true }
