@@ -29,7 +29,7 @@ var osm = hyperosm({
 var elms = []
 var oldToNewId = {}
 
-fs.createReadStream('./data.xml')
+fs.createReadStream(process.argv[3])
   .pipe(osm2obj())
   .on('data', function (elm) {
     delete elm.version
