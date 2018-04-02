@@ -40,7 +40,9 @@ function redraw () {
   charm.reset()
   osm.query(camera.bbox, function (err, elms) {
     if (err) throw err
-    elms.forEach(render.bind(null, charm, camera))
+    var all = {}
+    elms.forEach(function (elm) { all[elm.id] = elm })
+    elms.forEach(render.bind(null, charm, camera, all))
   })
 }
 
@@ -50,29 +52,31 @@ process.stdin.setRawMode(true)
 process.stdin.on('data', function (d) {
   var chr = d.toString('hex')
 
+  var move = (camera.bbox[0][1] - camera.bbox[0][0]) * 0.1
+
   switch (chr) {
     /* ctrl+c */ case '03': process.exit(0)
     /* h      */ case '68': {
-      camera.bbox[1][0] -= 0.003
-      camera.bbox[1][1] -= 0.003
+      camera.bbox[1][0] -= move
+      camera.bbox[1][1] -= move
       redraw()
       break
     }
     /* l      */ case '6c': {
-      camera.bbox[1][0] += 0.003
-      camera.bbox[1][1] += 0.003
+      camera.bbox[1][0] += move
+      camera.bbox[1][1] += move
       redraw()
       break
     }
     /* j      */ case '6a': {
-      camera.bbox[0][0] -= 0.003
-      camera.bbox[0][1] -= 0.003
+      camera.bbox[0][0] -= move
+      camera.bbox[0][1] -= move
       redraw()
       break
     }
     /* k      */ case '6b': {
-      camera.bbox[0][0] += 0.003
-      camera.bbox[0][1] += 0.003
+      camera.bbox[0][0] += move
+      camera.bbox[0][1] += move
       redraw()
       break
     }
