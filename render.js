@@ -4,8 +4,6 @@ var bresenham = require('bresenham')
 var termsize = require('window-size')
 
 function renderElement (charm, camera, element) {
-  elements[element.id] = element
-
   switch (element.type) {
     case 'node': renderNode(charm, camera, element); break
     case 'way': renderWay(charm, camera, element); break
@@ -17,15 +15,15 @@ function nodeToTermCoords (camera, node) {
   var horizScale = 0.5
   var vertScale = 1
 
-  var w = camera.bbox[1][0] - camera.bbox[0][0]
-  var h = camera.bbox[1][1] - camera.bbox[0][1]
-  var x = Math.round(((node.lon - camera.bbox[0][0]) / w) * termsize.width * horizScale)
-  var y = termsize.height - Math.round(((node.lat - camera.bbox[0][1]) / h) * termsize.height * vertScale)
+  var w = camera.bbox[1][1] - camera.bbox[1][0]
+  var h = camera.bbox[0][1] - camera.bbox[0][0]
+  var x = Math.round(((node.lon - camera.bbox[1][0]) / w) * termsize.width * horizScale)
+  var y = termsize.height - Math.round(((node.lat - camera.bbox[0][0]) / h) * termsize.height * vertScale)
   return [x, y]
 }
 
 function renderNode (charm, camera, node) {
-  if (node.tags) return
+  if (!node.tags) return
 
   var pos = nodeToTermCoords(camera, node)
   var x = pos[0]

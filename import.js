@@ -37,7 +37,6 @@ fs.createReadStream(process.argv[3])
     oldToNewId[elm.id] = id
     elm.id = id
     elms.push(elm)
-    console.log('elm', elm)
   })
   .on('end', function () {
     var batch = elms.map(function (elm) {
