@@ -25,32 +25,63 @@ function nodeToTermCoords (camera, node) {
 function renderNode (charm, camera, allElements, node) {
   if (!node.tags) return
 
+  if (node.tags.noexit) return
+
+  var label
+  if (node.tags.name) label = node.tags.name
+  else if (node.tags.amenity) label = node.tags.amenity
+  else if (node.tags.highway) label = node.tags.highway
+
   var pos = nodeToTermCoords(camera, node)
   var x = pos[0]
   var y = pos[1]
   if (x < 0 || y < 0 || x >= termsize.width || y >= termsize.height) return
 
+  charm.foreground(color(node))
   charm.position(x, y)
   charm.write('o')
+  if (label) {
+    charm.position(x - label.length/2, y - 1)
+    charm.write(label)
+  // } else {
+  //   console.log(node.tags)
+  }
 }
 
 function renderWay (charm, camera, allElements, way) {
-  charm.display('bright')
-  charm.foreground(color(way))
+  if (!way.tags) return
+  if (way.tags.area === 'yes') return  // for now
 
-  for (var i=0; i < way.refs.length - 1; i++) {
-    var n1 = allElements[way.refs[i]]
-    var n2 = allElements[way.refs[i+1]]
-    if (!n1 || !n2) continue
-    var p1 = nodeToTermCoords(camera, n1)
-    var p2 = nodeToTermCoords(camera, n2)
-    var pts = bresenham(p1[0], p1[1], p2[0], p2[1])
-    for (var j=0; j < pts.length; j++) {
-      var x = pts[j].x
-      var y = pts[j].y
-      if (x < 0 || y < 0 || x >= termsize.width || y >= termsize.height) continue
-      charm.position(x, y)
-      charm.write('#')
+  charm.display('bright')
+  var chr = null
+  var col = null
+  var area = false
+  if (way.tags.highway)               { col = 'white'; chr = '.' }
+  if (way.tags.barrier)               { col = 'black'; chr = 'x' }
+  if (way.tags.leisure)               { col = 'green'; chr = '.'; area = true }
+  if (way.tags.building)              { col = 'black'; chr = '#'; area = true }
+  if (way.tags.landuse === 'orchard') { col = 'green'; chr = '^'; area = true }
+  if (!col) { col = color(way); chr = '?' }
+  charm.foreground(col)
+
+  if (area) {
+    // draw as polygon
+  } else {
+    // draw as line
+    for (var i=0; i < way.refs.length - 1; i++) {
+      var n1 = allElements[way.refs[i]]
+      var n2 = allElements[way.refs[i+1]]
+      if (!n1 || !n2) continue
+      var p1 = nodeToTermCoords(camera, n1)
+      var p2 = nodeToTermCoords(camera, n2)
+      var pts = bresenham(p1[0], p1[1], p2[0], p2[1])
+      for (var j=0; j < pts.length; j++) {
+        var x = pts[j].x
+        var y = pts[j].y
+        if (x < 0 || y < 0 || x >= termsize.width || y >= termsize.height) continue
+        charm.position(x, y)
+        charm.write(chr)
+      }
     }
   }
 }
@@ -69,4 +100,3 @@ function color (elm) {
   n = Number(parseInt(elm.id, 16)) % colours.length
   return colours[n]
 }
-
