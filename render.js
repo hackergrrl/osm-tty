@@ -2,12 +2,12 @@ module.exports = render
 
 var bresenham = require('bresenham')
 var termsize = require('window-size')
-var vscreen = require('./screen')
+// var vscreen = require('./screen')
 
-function render (camera, elements, allElements) {
-  var screen = vscreen(termsize.width, termsize.height)
-  elements.forEach(renderElement.bind(null, screen, camera, allElements))
-  return screen.data()
+function render (charm, camera, elements, allElements) {
+  // var screen = vscreen(termsize.width, termsize.height)
+  elements.forEach(renderElement.bind(null, charm, camera, allElements))
+  // return screen.data()
 }
 
 function renderElement (screen, camera, allElements, element) {
@@ -44,11 +44,14 @@ function renderNode (screen, camera, allElements, node) {
   var y = pos[1]
   if (x < 0 || y < 0 || x >= termsize.width || y >= termsize.height) return
 
-  screen.foreground(color(node))
   screen.position(x, y)
+  screen.foreground(color(node))
   screen.write('o')
   if (label) {
-    screen.position(x - label.length/2, y - 1)
+    var lx = x - label.length / 2
+    var ly = y - 1
+    if (lx < 0) lx = 0
+    screen.position(lx, ly)
     screen.write(label)
   // } else {
   //   console.log(node.tags)
@@ -67,10 +70,10 @@ function renderWay (screen, camera, allElements, way) {
   if (way.tags.highway) {
     var hw = way.tags.highway
     if (hw === 'track') {
-      if (way.tags.tracktype === 'grade1') { col = 'white'; chr = '&' }
-      else if (way.tags.tracktype === 'grade2') { col = 'white'; chr = '%' }
-      else if (way.tags.tracktype === 'grade3') { col = 'white'; chr = '*' }
-      else if (way.tags.tracktype === 'grade4') { col = 'white'; chr = '.' }
+      if (way.tags.tracktype === 'grade4') { col = 'white'; chr = '&' }
+      else if (way.tags.tracktype === 'grade3') { col = 'white'; chr = '%' }
+      else if (way.tags.tracktype === 'grade2') { col = 'white'; chr = '*' }
+      else if (way.tags.tracktype === 'grade1') { col = 'white'; chr = '.' }
     }
     else if (hw === 'residential')    { col = 'black'; chr = '.' }
     else if (hw === 'living_street')  { col = 'black'; chr = '.' }
@@ -120,3 +123,7 @@ function color (elm) {
   n = Number(parseInt(elm.id, 16)) % colours.length
   return colours[n]
 }
+
+function drawLabel (x, y, label) {
+}
+

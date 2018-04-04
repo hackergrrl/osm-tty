@@ -23,9 +23,9 @@ var osm = hyperosm({
 var termsize = require('window-size')
 var ansidiff = require('ansi-diff')
 
-var differ = ansidiff({width: termsize.width, height: termsize.height})
-// var charm = require('charm')()
-// charm.pipe(process.stdout)
+// var differ = ansidiff({width: termsize.width, height: termsize.height})
+var charm = require('charm')()
+charm.pipe(process.stdout)
 
 var render = require('./render')
 // var at = [-122.2499,37.8357130]
@@ -58,9 +58,11 @@ function redraw () {
     var all = {}
     elms.sort(cmp)
     elms.forEach(function (elm) { all[elm.id] = elm })
-    var output = render(camera, elms, all)
-    var aus = differ.update(output)
-    process.stdout.write(aus)
+    charm.reset()
+    render(charm, camera, elms, all)
+    // var output = render(camera, elms, all)
+    // var aus = differ.update(output)
+    // process.stdout.write(aus)
   })
 }
 
