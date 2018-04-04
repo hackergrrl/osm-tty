@@ -1,18 +1,25 @@
-module.exports = renderElement
+module.exports = render
 
 var bresenham = require('bresenham')
 var termsize = require('window-size')
+var vscreen = require('./screen')
 
-function renderElement (charm, camera, allElements, element) {
+function render (camera, elements, allElements) {
+  var screen = vscreen(termsize.width, termsize.height)
+  elements.forEach(renderElement.bind(null, screen, camera, allElements))
+  return screen.data()
+}
+
+function renderElement (screen, camera, allElements, element) {
   switch (element.type) {
-    case 'node': renderNode(charm, camera, allElements, element); break
-    case 'way': renderWay(charm, camera, allElements, element); break
+    case 'node': renderNode(screen, camera, allElements, element); break
+    case 'way': renderWay(screen, camera, allElements, element); break
     // default: console.log('unknown', element.type)
   }
 }
 
 function nodeToTermCoords (camera, node) {
-  var horizScale = 0.55
+  var horizScale = 1//0.55
   var vertScale = 1
 
   var w = camera.bbox[1][1] - camera.bbox[1][0]
@@ -22,7 +29,7 @@ function nodeToTermCoords (camera, node) {
   return [x, y]
 }
 
-function renderNode (charm, camera, allElements, node) {
+function renderNode (screen, camera, allElements, node) {
   if (!node.tags) return
 
   if (node.tags.noexit) return
@@ -37,26 +44,26 @@ function renderNode (charm, camera, allElements, node) {
   var y = pos[1]
   if (x < 0 || y < 0 || x >= termsize.width || y >= termsize.height) return
 
-  charm.foreground(color(node))
-  charm.position(x, y)
-  charm.write('o')
+  screen.foreground(color(node))
+  screen.position(x, y)
+  screen.write('o')
   if (label) {
-    charm.position(x - label.length/2, y - 1)
-    charm.write(label)
+    screen.position(x - label.length/2, y - 1)
+    screen.write(label)
   // } else {
   //   console.log(node.tags)
   }
 }
 
-function renderWay (charm, camera, allElements, way) {
+function renderWay (screen, camera, allElements, way) {
   if (!way.tags) return
   if (way.tags.area === 'yes') return  // for now
 
-  charm.display('bright')
+  screen.display('bright')
   var chr = null
   var col = null
   var area = false
-  charm.foreground('white')
+  screen.foreground('white')
   if (way.tags.highway) {
     var hw = way.tags.highway
     if (hw === 'track') {
@@ -75,7 +82,7 @@ function renderWay (charm, camera, allElements, way) {
   if (way.tags.building)              { col = 'black'; chr = '#'; area = true }
   if (way.tags.landuse === 'orchard') { col = 'green'; chr = '^'; area = true }
   if (!col) { col = color(way); chr = '?' }
-  charm.foreground(col)
+  screen.foreground(col)
 
   if (area) {
     // draw as polygon
@@ -92,8 +99,8 @@ function renderWay (charm, camera, allElements, way) {
         var x = pts[j].x
         var y = pts[j].y
         if (x < 0 || y < 0 || x >= termsize.width || y >= termsize.height) continue
-        charm.position(x, y)
-        charm.write(chr)
+        screen.position(x, y)
+        screen.write(chr)
       }
     }
   }

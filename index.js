@@ -17,12 +17,15 @@ var ldb = level(path.join(dbdir, 'level'))
 var osm = hyperosm({
   db: hyperdb(path.join(dbdir, 'hyper'), { valueEncoding: 'json' }),
   index: ldb,
-  pointstore: grid({ store: sublevel(ldb, 'geo') })
+  pointstore: grid({ store: sublevel(ldb, 'geo'), zoomLevel: 8 })
 })
 
 var termsize = require('window-size')
-var charm = require('charm')()
-charm.pipe(process.stdout)
+var ansidiff = require('ansi-diff')
+
+var differ = ansidiff({width: termsize.width, height: termsize.height})
+// var charm = require('charm')()
+// charm.pipe(process.stdout)
 
 var render = require('./render')
 // var at = [-122.2499,37.8357130]
@@ -32,18 +35,32 @@ var size = 0.05
 var camera = {
   bbox: [
     [at[1] - size, at[1] + size],
-    [at[0] - size, at[0] + size]
+    [at[0] - size / 0.55, at[0] + size / 0.55]
   ]
 }
 
 function redraw () {
-  charm.reset()
+  // expand horizontally to grab enough to fill the screen
+  // var bbox = camera.bbox.slice()
+  // bbox[0] = camera.bbox[0].slice()
+  // bbox[1] = camera.bbox[1].slice()
+  // var w = bbox[1][1] - bbox[1][0]
+  // var nw = w / 0.55
+  // var inc = (nw - w) / 2
+  // bbox[1][0] -= inc
+  // bbox[1][1] += inc
+
+  console.time('query')
   osm.query(camera.bbox, function (err, elms) {
+    console.timeEnd('query')
+    console.log('res', elms.length)
     if (err) throw err
     var all = {}
     elms.sort(cmp)
     elms.forEach(function (elm) { all[elm.id] = elm })
-    elms.forEach(render.bind(null, charm, camera, all))
+    var output = render(camera, elms, all)
+    var aus = differ.update(output)
+    process.stdout.write(aus)
   })
 }
 
@@ -90,20 +107,22 @@ process.stdin.on('data', function (d) {
       break
     }
     /* i      */ case '69': {  // zoom in
-      var bboxGrowth = (camera.bbox[0][1] - camera.bbox[0][0]) * 0.1
-      camera.bbox[0][0] += bboxGrowth
-      camera.bbox[0][1] -= bboxGrowth
-      camera.bbox[1][0] += bboxGrowth
-      camera.bbox[1][1] -= bboxGrowth
+      var bboxGrowthLat = (camera.bbox[0][1] - camera.bbox[0][0]) * 0.1
+      var bboxGrowthLon = (camera.bbox[1][1] - camera.bbox[1][0]) * 0.1
+      camera.bbox[0][0] += bboxGrowthLat
+      camera.bbox[0][1] -= bboxGrowthLat
+      camera.bbox[1][0] += bboxGrowthLon
+      camera.bbox[1][1] -= bboxGrowthLon
       redraw()
       break
     }
     /* o      */ case '6f': {  // zoom out
-      var bboxShrinkage = (camera.bbox[0][1] - camera.bbox[0][0]) * 0.1
-      camera.bbox[0][0] -= bboxShrinkage
-      camera.bbox[0][1] += bboxShrinkage
-      camera.bbox[1][0] -= bboxShrinkage
-      camera.bbox[1][1] += bboxShrinkage
+      var bboxShrinkageLat = (camera.bbox[0][1] - camera.bbox[0][0]) * 0.1
+      var bboxShrinkageLon = (camera.bbox[1][1] - camera.bbox[1][0]) * 0.1
+      camera.bbox[0][0] -= bboxShrinkageLat
+      camera.bbox[0][1] += bboxShrinkageLat
+      camera.bbox[1][0] -= bboxShrinkageLon
+      camera.bbox[1][1] += bboxShrinkageLon
       redraw()
       break
     }

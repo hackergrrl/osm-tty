@@ -23,7 +23,7 @@ var ldb = level(path.join(dbdir, 'level'))
 var osm = hyperosm({
   db: hyperdb(path.join(dbdir, 'hyper'), { valueEncoding: 'json' }),
   index: ldb,
-  pointstore: grid({ store: sublevel(ldb, 'geo') })
+  pointstore: grid({ store: sublevel(ldb, 'geo'), zoomLevel: 8 })
 })
 
 var elms = []
