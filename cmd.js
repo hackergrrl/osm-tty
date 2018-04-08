@@ -1,4 +1,4 @@
-#/usr/bin/env node
+#!/usr/bin/env node
 
 var fs = require('fs')
 var argv = require('minimist')(process.argv)
@@ -18,7 +18,8 @@ if (argv._[2] === 'import') {
   if (argv._.length < 3) usage()
 
   var dbdir = argv._[2]
-  var at = [-154.973145, 19.585022]
+  var at = [-122.26640, 37.81263]
+  // var at = [-154.973145, 19.585022]
   if (argv._[3] && argv._[4]) {
     at = [Number(argv._[4]), Number(argv._[3])]
   }
