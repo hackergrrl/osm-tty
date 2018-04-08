@@ -41,7 +41,7 @@ module.exports = function (dbdir, at, size) {
       elms.sort(cmp)
       elms.forEach(function (elm) { all[elm.id] = elm })
       charm.reset()
-      render(charm, camera, elms, all)
+      render(charm, state, elms, all)
       // var output = render(camera, elms, all)
       // var aus = differ.update(output)
       // process.stdout.write(aus)
