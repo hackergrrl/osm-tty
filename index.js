@@ -40,20 +40,7 @@ var camera = {
 }
 
 function redraw () {
-  // expand horizontally to grab enough to fill the screen
-  // var bbox = camera.bbox.slice()
-  // bbox[0] = camera.bbox[0].slice()
-  // bbox[1] = camera.bbox[1].slice()
-  // var w = bbox[1][1] - bbox[1][0]
-  // var nw = w / 0.55
-  // var inc = (nw - w) / 2
-  // bbox[1][0] -= inc
-  // bbox[1][1] += inc
-
-  console.time('query')
   osm.query(camera.bbox, function (err, elms) {
-    console.timeEnd('query')
-    console.log('res', elms.length)
     if (err) throw err
     var all = {}
     elms.sort(cmp)
