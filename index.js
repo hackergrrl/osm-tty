@@ -64,6 +64,26 @@ module.exports = function (dbdir, at, size) {
 
     var move = (camera.bbox[0][1] - camera.bbox[0][0]) * 0.1
 
+    if (state.mode === 'select') {
+      if (chr === '03') {
+        state.mode = null
+        state.hints = null
+        redraw()
+        return
+      } else {
+        if (state.hints[d.toString()]) {
+          var id = state.hints[d.toString()]
+          osm.get(id, function (err, elms) {
+            var elm = JSON.parse(JSON.stringify(elms[0]))
+            charm.position(1,1)
+            if (elm.refs) elm.refs = elm.refs.length + ' nodes'
+            console.log(elm)
+          })
+        }
+        return
+      }
+    }
+
     switch (chr) {
       /* ctrl+c */ case '03': process.exit(0)
       /* h      */ case '68': {
@@ -107,6 +127,12 @@ module.exports = function (dbdir, at, size) {
         camera.bbox[0][1] += bboxShrinkageLat
         camera.bbox[1][0] -= bboxShrinkageLon
         camera.bbox[1][1] += bboxShrinkageLon
+        redraw()
+        break
+      }
+      /* s      */ case '73': {  // show info
+        state.hints = {}
+        state.mode = 'select'
         redraw()
         break
       }
