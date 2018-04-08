@@ -5,17 +5,17 @@ var termsize = require('window-size')
 var polygon = require('./polygon')
 // var vscreen = require('./screen')
 
-function render (charm, camera, elements, allElements) {
+function render (charm, state, elements, allElements) {
   // var screen = vscreen(termsize.width, termsize.height)
-  elements.forEach(renderElement.bind(null, charm, camera, allElements))
-  drawStatusBar(charm, camera)
+  elements.forEach(renderElement.bind(null, charm, state, allElements))
+  drawStatusBar(charm, state)
   // return screen.data()
 }
 
-function renderElement (screen, camera, allElements, element) {
+function renderElement (screen, state, allElements, element) {
   switch (element.type) {
-    case 'node': renderNode(screen, camera, allElements, element); break
-    case 'way': renderWay(screen, camera, allElements, element); break
+    case 'node': renderNode(screen, state, allElements, element); break
+    case 'way': renderWay(screen, state, allElements, element); break
     // default: console.log('unknown', element.type)
   }
 }
@@ -31,14 +31,14 @@ function nodeToTermCoords (camera, node) {
   return [x, y]
 }
 
-function renderNode (screen, camera, allElements, node) {
+function renderNode (screen, state, allElements, node) {
   if (!node.tags) return
 
   if (node.tags.noexit) return
 
   var label = getName(node)
 
-  var pos = nodeToTermCoords(camera, node)
+  var pos = nodeToTermCoords(state.camera, node)
   var x = pos[0]
   var y = pos[1]
   if (x < 0 || y < 0 || x >= termsize.width || y >= termsize.height) return
@@ -56,7 +56,7 @@ function renderNode (screen, camera, allElements, node) {
   }
 }
 
-function renderWay (screen, camera, allElements, way) {
+function renderWay (screen, state, allElements, way) {
   if (!way.tags) return
   if (way.tags.area === 'yes') return  // for now
 
@@ -99,7 +99,7 @@ function renderWay (screen, camera, allElements, way) {
     for (var i=0; i < way.refs.length; i++) {
       var n = allElements[way.refs[i]]
       if (!n) continue
-      var p = nodeToTermCoords(camera, n)
+      var p = nodeToTermCoords(state.camera, n)
       pts.push(p)
       centroid[0] += p[0]
       centroid[1] += p[1]
@@ -122,8 +122,8 @@ function renderWay (screen, camera, allElements, way) {
       var n1 = allElements[way.refs[i]]
       var n2 = allElements[way.refs[i+1]]
       if (!n1 || !n2) continue
-      var p1 = nodeToTermCoords(camera, n1)
-      var p2 = nodeToTermCoords(camera, n2)
+      var p1 = nodeToTermCoords(state.camera, n1)
+      var p2 = nodeToTermCoords(state.camera, n2)
       var pts = bresenham(p1[0], p1[1], p2[0], p2[1])
       for (var j=0; j < pts.length; j++) {
         var x = pts[j].x
@@ -161,7 +161,7 @@ function color (elm) {
   return colours[n]
 }
 
-function drawStatusBar (screen, camera) {
+function drawStatusBar (screen, state) {
   screen.position(0, termsize.height - 1)
   for (var i = 0; i < termsize.width; i++) {
     screen.write('=')
@@ -172,9 +172,14 @@ function drawStatusBar (screen, camera) {
   }
 
   screen.position(termsize.width - 25, termsize.height - 0)
-  var lat = ((camera.bbox[0][1] + camera.bbox[0][0]) / 2).toFixed(6)
-  var lon = ((camera.bbox[1][1] + camera.bbox[1][0]) / 2).toFixed(6)
+  var lat = ((state.camera.bbox[0][1] + state.camera.bbox[0][0]) / 2).toFixed(6)
+  var lon = ((state.camera.bbox[1][1] + state.camera.bbox[1][0]) / 2).toFixed(6)
   screen.write(lat + ' ' + lon)
+
+  if (state.mode) {
+    screen.position(2, termsize.height - 0)
+    screen.write('-- ' + state.mode.toUpperCase() + ' --')
+  }
 }
 
 function getName (elm) {

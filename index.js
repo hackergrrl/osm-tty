@@ -29,6 +29,11 @@ module.exports = function (dbdir, at, size) {
     ]
   }
 
+  var state = {
+    camera: camera,
+    mode: null
+  }
+
   function redraw () {
     osm.query(camera.bbox, function (err, elms) {
       if (err) throw err
