@@ -22,7 +22,11 @@ $ osm-tty db
 
 `hjkl` keys to pan, `io` to zoom in and out.
 
-It's pretty janky, and I only wrote render rules for a small subset of OSM features, but it's not bad for rudimentary offline navigation!
+Type `s` to enter `-- SELECT --` mode. The labels will change to one-letter
+hints that you can type to get a raw OSM dump of that element.
+
+It's pretty janky, and I only wrote render rules for a small subset of OSM
+features, but it's not bad for rudimentary offline navigation!
 
 ## See Also
 
