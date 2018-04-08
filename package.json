@@ -6,6 +6,9 @@
   "repository": {
     "url": "git://github.com/noffle/osm-tty.git"
   },
+  "bin": {
+    "osm-tty": "node index.js"
+  },
   "homepage": "https://github.com/noffle/osm-tty",
   "bugs": "https://github.com/noffle/osm-tty/issues",
   "main": "index.js",
