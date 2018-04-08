@@ -2,7 +2,7 @@
 
 > interactive offline OpenStreetMap viewer in the terminal
 
-Uses hyperdb-osm and also osm-grab for downloading OSM XML to feed into the database.
+Uses [hyperdb-osm](https://github.com/digidem/hyperdb-osm) and also [osm-grab](https://github.com/noffle/osm-grab) for downloading OSM XML to feed into the database.
 
 <center><img src="https://github.com/noffle/osm-tty/raw/master/screenshot.png"/></center>
 
