@@ -7,6 +7,7 @@ var termsize = require('window-size')
 function render (charm, camera, elements, allElements) {
   // var screen = vscreen(termsize.width, termsize.height)
   elements.forEach(renderElement.bind(null, charm, camera, allElements))
+  drawStatusBar(charm, camera)
   // return screen.data()
 }
 
@@ -124,6 +125,18 @@ function color (elm) {
   return colours[n]
 }
 
-function drawLabel (x, y, label) {
-}
+function drawStatusBar (screen, camera) {
+  screen.position(0, termsize.height - 1)
+  for (var i = 0; i < termsize.width; i++) {
+    screen.write('=')
+  }
+  screen.position(0, termsize.height - 0)
+  for (var i = 0; i < termsize.width; i++) {
+    screen.write(' ')
+  }
 
+  screen.position(termsize.width - 25, termsize.height - 0)
+  var lat = ((camera.bbox[1][1] + camera.bbox[1][0]) / 2).toFixed(6)
+  var lon = ((camera.bbox[0][1] + camera.bbox[0][0]) / 2).toFixed(6)
+  screen.write(lat + ' ' + lon)
+}
