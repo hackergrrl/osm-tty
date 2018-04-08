@@ -142,6 +142,7 @@ function renderWay (screen, state, allElements, way) {
       if (!n1 || !n2) continue
       var p1 = nodeToTermCoords(state.camera, n1)
       var p2 = nodeToTermCoords(state.camera, n2)
+      if (!visible(p1[0], p1[1]) && !visible(p2[0], p2[1])) continue
       var pts = bresenham(p1[0], p1[1], p2[0], p2[1])
       for (var j=0; j < pts.length; j++) {
         var x = pts[j].x
@@ -245,4 +246,8 @@ function genHint (hints) {
     n -= hintchars.length
   }
   return s
+}
+
+function visible (x, y) {
+  return x >= 0 && y >= 0 && y < termsize.height && x < termsize.width
 }
