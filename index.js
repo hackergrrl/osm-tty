@@ -1,10 +1,19 @@
 var fs = require('fs')
 
 if (!process.argv[2] || !fs.existsSync(process.argv[2])) {
-  console.error('USAGE: node index.js DB')
+  console.error('USAGE: node index.js DB <LAT LON>')
   process.exit(1)
 }
 var dbdir = process.argv[2]
+
+var argv = require('minimist')(process.argv)
+
+// var at = [-122.2499,37.8357130]
+var at = [-154.973145, 19.585022]
+var size = 0.05
+if (argv._[3] && argv._[4]) {
+  at = [Number(argv._[4]), Number(argv._[3])]
+}
 
 var hyperdb = require('hyperdb')
 var hyperosm = require('hyperdb-osm')
@@ -28,9 +37,6 @@ var charm = require('charm')()
 charm.pipe(process.stdout)
 
 var render = require('./render')
-// var at = [-122.2499,37.8357130]
-var at = [-154.973145, 19.585022]
-var size = 0.05
 
 var camera = {
   bbox: [
