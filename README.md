@@ -24,6 +24,10 @@ $ osm-tty db
 
 It's pretty janky, and I only wrote render rules for a small subset of OSM features, but it's not bad for rudimentary offline navigation!
 
+## See Also
+
+- [mapscii](https://github.com/rastapasta/mapscii): super fancypants ascii client
+
 ## License
 
 ISC
