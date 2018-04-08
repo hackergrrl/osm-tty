@@ -112,7 +112,7 @@ function renderWay (screen, camera, allElements, way) {
       centroid[0] /= way.refs.length
       centroid[1] /= way.refs.length
       screen.position(centroid[0] - label.length/3, centroid[1])
-      screen.write(way.tags.name)
+      screen.write(label)
     }
   } else {
     // draw as line
@@ -160,8 +160,8 @@ function drawStatusBar (screen, camera) {
   }
 
   screen.position(termsize.width - 25, termsize.height - 0)
-  var lat = ((camera.bbox[1][1] + camera.bbox[1][0]) / 2).toFixed(6)
-  var lon = ((camera.bbox[0][1] + camera.bbox[0][0]) / 2).toFixed(6)
+  var lat = ((camera.bbox[0][1] + camera.bbox[0][0]) / 2).toFixed(6)
+  var lon = ((camera.bbox[1][1] + camera.bbox[1][0]) / 2).toFixed(6)
   screen.write(lat + ' ' + lon)
 }
 
