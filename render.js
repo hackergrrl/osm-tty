@@ -95,11 +95,18 @@ function renderWay (screen, state, allElements, way) {
   else if (way.tags.landuse === 'residential')  { col = 'green'; chr = '.'; area = true }
   else if (way.tags.landuse)                    { col = 'green'; chr = '^'; area = true }
   if (way.tags.amenity === 'university')   { col = 'magenta'; chr = '.'; area = true }
+  if (way.tags.amenity === 'parking')      { col = 'black'; chr = '-'; area = true }
+  if (way.tags.amenity === 'cinema')       { col = 'yellow'; chr = '!'; area = true }
+  else if (way.tags.amenity)               { chr = '?'; area = true }
   if (way.tags.natural)                    { col = 'green'; chr = '~' }
   if (way.tags.water)                      { col = 'blue'; chr = '~' }
   if (way.tags.waterway)                   { col = 'blue'; chr = '~' }
   if (way.tags.power)                      { col = 'yellow'; chr = 'z' }
+  if (way.tags.railway)                    { col = 'darkyellow'; chr = 'x' }
   if (!col) { col = color(way); chr = '?' }
+
+  if (col.startsWith('dark')) { screen.display('dim'); col = col.replace('dark', '') }
+  else { screen.display('bright'); screen.display('bright') }
   screen.foreground(col)
 
   var label = getName(way)
@@ -177,6 +184,8 @@ function color (elm) {
 }
 
 function drawStatusBar (screen, state) {
+  screen.foreground('white')
+
   screen.position(0, termsize.height - 1)
   for (var i = 0; i < termsize.width; i++) {
     screen.write('=')
