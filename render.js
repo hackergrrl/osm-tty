@@ -211,7 +211,8 @@ function getName (elm) {
 }
 
 function addLabel (screen, state, x, y, col, label) {
-  if (x >= termsize.width) return
+  if (y < 0 || y >= termsize.height) return
+  if (x < 0) return
   if (x + label.length >= termsize.width) label = label.substring(0, label.length - x)
 
   state.labels.push({
