@@ -50,8 +50,7 @@ function renderNode (screen, camera, allElements, node) {
     var lx = x - label.length / 2
     var ly = y - 1
     if (lx < 0) lx = 0
-    screen.position(lx, ly)
-    screen.write(label)
+    drawLabel(screen, lx, ly, label)
   // } else {
   //   console.log(node.tags)
   }
@@ -89,6 +88,7 @@ function renderWay (screen, camera, allElements, way) {
   else if (way.tags.landuse)                    { col = 'green'; chr = '^'; area = true }
   if (way.tags.amenity === 'university')   { col = 'magenta'; chr = '.'; area = true }
   if (way.tags.natural)                    { col = 'green'; chr = '~' }
+  if (way.tags.water)                      { col = 'blue'; chr = '~' }
   if (!col) { col = color(way); chr = '?' }
   screen.foreground(col)
 
@@ -111,8 +111,7 @@ function renderWay (screen, camera, allElements, way) {
       screen.foreground('white')
       centroid[0] /= way.refs.length
       centroid[1] /= way.refs.length
-      screen.position(centroid[0] - label.length/3, centroid[1])
-      screen.write(label)
+      drawLabel(screen, centroid[0] - label.length/3, centroid[1], label)
     }
   } else {
     // draw as line
@@ -171,4 +170,12 @@ function getName (elm) {
   else if (elm.tags.amenity) label = elm.tags.amenity
   else if (elm.tags.highway) label = elm.tags.highway
   return label
+}
+
+function drawLabel (screen, x, y, label) {
+  if (x >= termsize.width) return
+  if (x + label.length >= termsize.width) label = label.substring(0, label.length - x)
+
+  screen.position(x, y)
+  screen.write(label)
 }
