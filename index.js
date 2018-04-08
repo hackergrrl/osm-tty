@@ -10,7 +10,7 @@ var argv = require('minimist')(process.argv)
 
 // var at = [-122.2499,37.8357130]
 var at = [-154.973145, 19.585022]
-var size = 0.005
+var size = 0.0005
 if (argv._[3] && argv._[4]) {
   at = [Number(argv._[4]), Number(argv._[3])]
 }
