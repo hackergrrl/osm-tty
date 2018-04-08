@@ -115,6 +115,9 @@ function renderWay (screen, camera, allElements, way) {
     }
   } else {
     // draw as line
+    var label = getName(way)
+    var lx, ly
+
     for (var i=0; i < way.refs.length - 1; i++) {
       var n1 = allElements[way.refs[i]]
       var n2 = allElements[way.refs[i+1]]
@@ -126,9 +129,19 @@ function renderWay (screen, camera, allElements, way) {
         var x = pts[j].x
         var y = pts[j].y
         if (x < 0 || y < 0 || x >= termsize.width || y >= termsize.height) continue
+        if (x > 15 && x < termsize.width - 15 && y > 3 && y <= termsize.height - 3) {
+          if (!lx && !ly) {
+            lx = x
+            ly = y
+          }
+        }
         screen.position(x, y)
         screen.write(chr)
       }
+    }
+
+    if (lx && ly && label) {
+      drawLabel(screen, lx, ly, label)
     }
   }
 }
