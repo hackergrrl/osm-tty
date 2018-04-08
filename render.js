@@ -6,8 +6,10 @@ var polygon = require('./polygon')
 // var vscreen = require('./screen')
 
 function render (charm, state, elements, allElements) {
+  state.labels = []
   // var screen = vscreen(termsize.width, termsize.height)
   elements.forEach(renderElement.bind(null, charm, state, allElements))
+  drawLabels(charm, state)
   drawStatusBar(charm, state)
   // return screen.data()
 }
@@ -55,7 +57,7 @@ function renderNode (screen, state, allElements, node) {
     var lx = x - label.length / 2
     var ly = y - 1
     if (lx < 0) lx = 0
-    drawLabel(screen, state, lx, ly, label)
+    addLabel(screen, state, lx, ly, color(node), label)
   }
 }
 
@@ -126,10 +128,9 @@ function renderWay (screen, state, allElements, way) {
     polygon(screen, pts, chr)
 
     if (label) {
-      screen.foreground('white')
       centroid[0] /= way.refs.length
       centroid[1] /= way.refs.length
-      drawLabel(screen, state, centroid[0] - label.length/3, centroid[1], label)
+      addLabel(screen, state, centroid[0] - label.length/3, centroid[1], 'white', label)
     }
   } else {
     // draw as line
@@ -158,7 +159,7 @@ function renderWay (screen, state, allElements, way) {
     }
 
     if (lx && ly && label) {
-      drawLabel(screen, state, lx, ly, label)
+      addLabel(screen, state, lx, ly, 'white', label)
     }
   }
 }
@@ -209,13 +210,25 @@ function getName (elm) {
   return label
 }
 
-function drawLabel (screen, state, x, y, label) {
+function addLabel (screen, state, x, y, col, label) {
   if (x >= termsize.width) return
   if (x + label.length >= termsize.width) label = label.substring(0, label.length - x)
 
+  state.labels.push({
+    x: x,
+    y: y,
+    label: label,
+    color: col
+  })
+}
+
+function drawLabels (screen, state) {
   if (state.hints) screen.display('underscore')
-  screen.position(x, y)
-  screen.write(label)
+  state.labels.forEach(function (label) {
+    screen.foreground(label.color)
+    screen.position(label.x, label.y)
+    screen.write(label.label)
+  })
   if (state.hints) screen.display('reset')
 }
 
