@@ -55,11 +55,7 @@ function renderNode (screen, state, allElements, node) {
     var lx = x - label.length / 2
     var ly = y - 1
     if (lx < 0) lx = 0
-    drawLabel(screen, lx, ly, label)
-  // } else {
-  //   console.log(node.tags)
-    screen.position(lx, ly)
-    screen.write(label)
+    drawLabel(screen, state, lx, ly, label)
   }
 }
 
@@ -71,7 +67,6 @@ function renderWay (screen, state, allElements, way) {
   var chr = null
   var col = null
   var area = false
-  screen.foreground('white')
   if (way.tags.highway) {
     var hw = way.tags.highway
     if (hw === 'track') {
@@ -94,9 +89,9 @@ function renderWay (screen, state, allElements, way) {
   else if (way.tags.landuse === 'residential')  { col = 'green'; chr = '.'; area = true }
   else if (way.tags.landuse === 'residential')  { col = 'green'; chr = '.'; area = true }
   else if (way.tags.landuse)                    { col = 'green'; chr = '^'; area = true }
-  if (way.tags.amenity === 'university')   { col = 'magenta'; chr = '.'; area = true }
-  if (way.tags.amenity === 'parking')      { col = 'black'; chr = '-'; area = true }
-  if (way.tags.amenity === 'cinema')       { col = 'yellow'; chr = '!'; area = true }
+  if (way.tags.amenity === 'university')        { col = 'magenta'; chr = '.'; area = true }
+  else if (way.tags.amenity === 'parking')      { col = 'black'; chr = '-'; area = true }
+  else if (way.tags.amenity === 'cinema')       { col = 'yellow'; chr = '!'; area = true }
   else if (way.tags.amenity)               { chr = '?'; area = true }
   if (way.tags.natural)                    { col = 'green'; chr = '~' }
   if (way.tags.water)                      { col = 'blue'; chr = '~' }
@@ -134,7 +129,7 @@ function renderWay (screen, state, allElements, way) {
       screen.foreground('white')
       centroid[0] /= way.refs.length
       centroid[1] /= way.refs.length
-      drawLabel(screen, centroid[0] - label.length/3, centroid[1], label)
+      drawLabel(screen, state, centroid[0] - label.length/3, centroid[1], label)
     }
   } else {
     // draw as line
@@ -163,7 +158,7 @@ function renderWay (screen, state, allElements, way) {
     }
 
     if (lx && ly && label) {
-      drawLabel(screen, lx, ly, label)
+      drawLabel(screen, state, lx, ly, label)
     }
   }
 }
@@ -214,12 +209,14 @@ function getName (elm) {
   return label
 }
 
-function drawLabel (screen, x, y, label) {
+function drawLabel (screen, state, x, y, label) {
   if (x >= termsize.width) return
   if (x + label.length >= termsize.width) label = label.substring(0, label.length - x)
 
+  if (state.hints) screen.display('underscore')
   screen.position(x, y)
   screen.write(label)
+  if (state.hints) screen.display('reset')
 }
 
 var hintchars = [ 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
