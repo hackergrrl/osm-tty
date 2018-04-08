@@ -17,6 +17,7 @@
     "ansi-diff": "^1.1.0",
     "bresenham": "0.0.4",
     "charm": "^1.0.2",
+    "flood-fill": "^0.1.1",
     "grid-point-store": "^2.1.1",
     "hyperdb": "^2.1.1",
     "hyperdb-osm": "^4.4.1",
@@ -24,11 +25,13 @@
     "memdb": "^1.3.1",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
+    "ndarray": "^1.0.18",
     "osm2obj": "^2.2.2",
     "random-access-memory": "^2.4.0",
     "randombytes": "^2.0.6",
     "subleveldown": "^2.1.0",
-    "window-size": "^1.1.0"
+    "window-size": "^1.1.0",
+    "zeros": "^1.0.0"
   },
   "devDependencies": {
     "tape": "~4.6.2"

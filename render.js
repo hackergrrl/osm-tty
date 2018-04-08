@@ -2,6 +2,7 @@ module.exports = render
 
 var bresenham = require('bresenham')
 var termsize = require('window-size')
+var polygon = require('./polygon')
 // var vscreen = require('./screen')
 
 function render (charm, camera, elements, allElements) {
@@ -35,10 +36,7 @@ function renderNode (screen, camera, allElements, node) {
 
   if (node.tags.noexit) return
 
-  var label
-  if (node.tags.name) label = node.tags.name
-  else if (node.tags.amenity) label = node.tags.amenity
-  else if (node.tags.highway) label = node.tags.highway
+  var label = getName(node)
 
   var pos = nodeToTermCoords(camera, node)
   var x = pos[0]
@@ -81,15 +79,41 @@ function renderWay (screen, camera, allElements, way) {
     else if (hw === 'service')        { col = 'cyan'; chr = '.' }
     else { col = 'white'; chr = '.' }
   }
-  if (way.tags.barrier)               { col = 'black'; chr = 'x' }
-  if (way.tags.leisure)               { col = 'green'; chr = '.'; area = true }
-  if (way.tags.building)              { col = 'black'; chr = '#'; area = true }
-  if (way.tags.landuse === 'orchard') { col = 'green'; chr = '^'; area = true }
+  if (way.tags.barrier)                    { col = 'black'; chr = 'x' }
+  if (way.tags.leisure)                    { col = 'green'; chr = '.'; area = true }
+  if (way.tags.building)                   { col = 'black'; chr = '#'; area = true }
+  if (way.tags.landuse === 'orchard')      { col = 'green'; chr = '^'; area = true }
+  else if (way.tags.landuse === 'retail')       { col = 'black'; chr = '$'; area = true }
+  else if (way.tags.landuse === 'residential')  { col = 'green'; chr = '.'; area = true }
+  else if (way.tags.landuse === 'residential')  { col = 'green'; chr = '.'; area = true }
+  else if (way.tags.landuse)                    { col = 'green'; chr = '^'; area = true }
+  if (way.tags.amenity === 'university')   { col = 'magenta'; chr = '.'; area = true }
+  if (way.tags.natural)                    { col = 'green'; chr = '~' }
   if (!col) { col = color(way); chr = '?' }
   screen.foreground(col)
 
   if (area) {
     // draw as polygon
+    var centroid = [0,0]
+    var pts = []
+    for (var i=0; i < way.refs.length; i++) {
+      var n = allElements[way.refs[i]]
+      if (!n) continue
+      var p = nodeToTermCoords(camera, n)
+      pts.push(p)
+      centroid[0] += p[0]
+      centroid[1] += p[1]
+    }
+    polygon(screen, pts, chr)
+
+    var label = getName(way)
+    if (label) {
+      screen.foreground('white')
+      centroid[0] /= way.refs.length
+      centroid[1] /= way.refs.length
+      screen.position(centroid[0] - label.length/3, centroid[1])
+      screen.write(way.tags.name)
+    }
   } else {
     // draw as line
     for (var i=0; i < way.refs.length - 1; i++) {
@@ -139,4 +163,12 @@ function drawStatusBar (screen, camera) {
   var lat = ((camera.bbox[1][1] + camera.bbox[1][0]) / 2).toFixed(6)
   var lon = ((camera.bbox[0][1] + camera.bbox[0][0]) / 2).toFixed(6)
   screen.write(lat + ' ' + lon)
+}
+
+function getName (elm) {
+  var label
+  if (elm.tags.name) label = elm.tags.name
+  else if (elm.tags.amenity) label = elm.tags.amenity
+  else if (elm.tags.highway) label = elm.tags.highway
+  return label
 }
